@@ -36,7 +36,7 @@ export default async function (fastify) {
 
         user.email = email;
         if (password) {
-          await user.password = password;
+          await user.setPassword(password);
         }
 
         await user.save();
