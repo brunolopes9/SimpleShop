@@ -3,7 +3,7 @@ export default async function (fastify) {
   fastify.get("/", async (request, reply) => {
     try {
       // Placeholder: Fetch users from the database
-      const users = []; // Replace with actual database query
+      const users = await fastify.models.User.findAll();
 
       return reply.view("admin/user.ejs", {
         title: "Manage Users",
@@ -26,11 +26,29 @@ export default async function (fastify) {
     try {
       if (userId) {
         // Placeholder: Update existing user in the database
+        const user = await fastify.models.User.findByPk(userId);
+        if (!user) {
+          request.session.set("messages", [
+            { type: "danger", text: "Could not find user" }
+          ]);
+          return reply.redirect("/admin/user");
+        }
+
+        user.email = email;
+        if (password) {
+          user.password = password;
+        }
+
+        await user.save();
+
         request.session.set("messages", [
           { type: "success", text: "User updated successfully." }
         ]);
       } else {
         // Placeholder: Create a new user in the database
+
+        await fastify.models.User.create({ email, password });
+
         request.session.set("messages", [
           { type: "success", text: "User created successfully." }
         ]);
@@ -51,7 +69,7 @@ export default async function (fastify) {
 
     try {
       // Placeholder: Fetch user by ID from the database
-      const user = null; // Replace with actual database query
+      const user = await fastify.models.user.findByPk(id);
       return reply.view("admin/user.ejs", {
         title: "Edit User",
         currentPath: "/admin/user",
