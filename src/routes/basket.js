@@ -9,6 +9,14 @@ function requireLogin(req, reply) {
   return true; // Allow execution to continue
 }
 
+function basketKey(req) {
+  const user = req.session.get("user");
+  if (!user) return null;
+  {
+    return `mybasket:user:${user.id}:items`;
+  }
+}
+
 export default async function (fastify) {
   // Route to display basket contents
   fastify.get("/", async (req, reply) => {
@@ -18,20 +26,14 @@ export default async function (fastify) {
       fastify.log.info("Fetching basket contents.");
 
       // TODO: Fetch basket contents from Redis
+
       const key = basketKey(req);
       const basket = await fastify.redis.hgetall(key);
 
-      const items = await Promise.all(
-        Object.entries(basket).map(async ([sku, quantity]) => {
-          const item = await fastify.Item.findOne({ sku });
-          return {
-            sku,
-            name: item ? item.name : "Uknown Item",
-            price: item ? item.price : "N/A",
-            quantity: parseInt(quantity, 10)
-          };
-        })
-      );
+      const items = Object.entries(basket).map(([sku, quantity]) => ({
+        sku,
+        quantity: parseInt(quantity, 10)
+      }));
 
       return reply.view("basket.ejs", {
         title: "Your Basket",
@@ -56,6 +58,8 @@ export default async function (fastify) {
       fastify.log.info(`Adding item with SKU: ${sku}, quantity: ${quantity}`);
 
       // TODO: Add the item to the Redis basket
+      const key = basketKey(req);
+      await fastify.redis.hincrby(key, sku, parseInt(quantity, 10));
 
       req.session.set("messages", [
         {
@@ -82,6 +86,9 @@ export default async function (fastify) {
       fastify.log.info(`Removing item with SKU: ${sku}`);
 
       // TODO: Remove the item from the Redis basket
+
+      const key = basketKey(req);
+      await fastify.redis.hdel(key, sku);
 
       req.session.set("messages", [
         {
@@ -131,6 +138,9 @@ export default async function (fastify) {
 
       fastify.log.info("Clearing all items from the basket.");
       // TODO: Clear all basket items from Redis
+
+      const key = basketKey(req);
+      await fastify.redis.del(key);
 
       req.session.set("messages", [
         { type: "success", text: "Your basket has been cleared." }
