@@ -1,16 +1,12 @@
-# 🛒 Simple Shop
 
-# <<<<<<< HEAD
 
 # 🛒 Simple Shop
 
 A simple but powerful e-commerce application built with Fastify, MySQL, MongoDB, and Redis, integrating multiple technologies and modern development standards.
 
-> > > > > > > 10feefb (final versioN)
-
 ## 📷 Screenshots
 
-_(Adicione aqui imagens com: `![alt text](caminho/para/imagem.png)`)_
+<p> <img src="public/1.jpeg"  </p>
 
 ## 🚀 Technologies Used
 
