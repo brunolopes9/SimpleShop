@@ -1,8 +1,12 @@
 # 🛒 Simple Shop
 
-=======
+# <<<<<<< HEAD
 
-🛒 Simple Shop
+# 🛒 Simple Shop
+
+A simple but powerful e-commerce application built with Fastify, MySQL, MongoDB, and Redis, integrating multiple technologies and modern development standards.
+
+> > > > > > > 10feefb (final versioN)
 
 ## 📷 Screenshots
 
@@ -50,6 +54,7 @@ src/
 - Node.js v18+
 - MySQL
 - MongoDB
+  <<<<<<< HEAD
 - # Redis
   📦 Prerequisites
   -> Node.js v18+
@@ -57,3 +62,6 @@ src/
   -> MongoDB
   -> Redis
   =======
+  =======
+- Redis
+  > > > > > > > 10feefb (final versioN)
