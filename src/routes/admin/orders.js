@@ -5,12 +5,36 @@ export default async function (fastify) {
       // TODO: Fetch all orders and their items from the database
       fastify.log.info("Fetching all orders for admin view.");
 
-      const orders = []; // Replace with actual database query
+      const orders = await fastify.models.Order.findAll({
+        include: [
+          {
+            model: fastify.models.OrderItem,
+            as: "items"
+          },
+          {
+            model: fastify.models.User,
+            as: "user",
+            attributes: ["email"]
+          }
+        ]
+      });
+
+      const orderData = orders.map((order) => ({
+        id: order.id,
+        status: order.status,
+        email: order.user?.email || order.email,
+        createdAt: order.createdAt,
+        OrderItems: order.items.map((item) => ({
+          sku: item.sku,
+          qty: item.qty,
+          price: item.price
+        }))
+      }));
 
       return reply.view("admin/orders.ejs", {
         title: "Manage Orders",
         currentPath: "/admin/orders",
-        orders
+        orders: orderData
       });
     } catch (error) {
       request.session.set("messages", [
