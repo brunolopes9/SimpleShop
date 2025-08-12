@@ -63,14 +63,11 @@ src/
 - Node.js v18+
 - MySQL
 - MongoDB
-  <<<<<<< HEAD
+
 - # Redis
   📦 Prerequisites
   -> Node.js v18+
   -> MySQL
   -> MongoDB
   -> Redis
-  =======
-  =======
-- Redis
-  > > > > > > > 10feefb (final versioN)
+
