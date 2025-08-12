@@ -17,6 +17,10 @@ export const config = {
     }
   },
 
+  redis: {
+    host: "localhost",
+    port: 6379
+  },
   session: {
     // Secret key to encrypt client side sessions.
     // Created on the terminal with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`

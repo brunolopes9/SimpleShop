@@ -16,8 +16,22 @@ export default async function (fastify) {
       if (!requireLogin(req, reply)) return; // Stop execution if user is not logged in
 
       fastify.log.info("Fetching basket contents.");
+
       // TODO: Fetch basket contents from Redis
-      const items = []; // Replace this with Redis retrieval logic
+      const key = basketKey(req);
+      const basket = await fastify.redis.hgetall(key);
+
+      const items = await Promise.all(
+        Object.entries(basket).map(async ([sku, quantity]) => {
+          const item = await fastify.Item.findOne({ sku });
+          return {
+            sku,
+            name: item ? item.name : "Uknown Item",
+            price: item ? item.price : "N/A",
+            quantity: parseInt(quantity, 10)
+          };
+        })
+      );
 
       return reply.view("basket.ejs", {
         title: "Your Basket",
