@@ -6,7 +6,7 @@ A simple but powerful e-commerce application built with Fastify, MySQL, MongoDB,
 
 ## 📷 Screenshots
 
-<p> <img src="public/1.jpeg"  </p>
+<p> <img src="public/1.jpg"  </p>
 
 ## 🚀 Technologies Used
 
