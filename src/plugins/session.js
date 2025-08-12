@@ -1,8 +1,8 @@
 import fp from "fastify-plugin";
-import fastifySecureSession from "@fastify/secure-session";
 import fastifyCookie from "@fastify/cookie";
 import fastifySession from "@fastify/session";
 import { RedisStore } from "connect-redis";
+import { createClient } from "redis";
 
 async function sessionPlugin(fastify, config) {
   const secret = config.secret;
@@ -13,30 +13,44 @@ async function sessionPlugin(fastify, config) {
     );
   }
 
-  fastify.register(fastifyCookie);
+  // Regista fastify-cookie
+  await fastify.register(fastifyCookie);
 
+  // Cria e conecta o cliente Redis oficial
+  const redisClient = createClient({
+    socket: {
+      host: config.host,
+      port: config.port
+    }
+  });
+
+  redisClient.on("error", (err) =>
+    fastify.log.error("Redis Client Error", err)
+  );
+
+  await redisClient.connect();
+
+  // Cria o RedisStore com o cliente redis oficial
   const redisStore = new RedisStore({
-    client: fastify.redis,
+    client: redisClient,
     prefix: "myshop:"
   });
 
-  // Register fastify-secure-session
-  fastify.register(fastifySession, {
+  // Regista fastify-session com RedisStore
+  await fastify.register(fastifySession, {
     store: redisStore,
     secret,
     cookie: {
       path: "/",
       httpOnly: true,
       secure: false,
-      maxAge: 3600 * 1000 // 1-hour session expiration
-    },
-    saveUnitialized: false,
-    resave: false
+      maxAge: 3600 * 1000
+    }
   });
 
-  // Decorate to clear session
+  // Decorate para limpar sessão
   fastify.decorate("clearSession", (req) => {
-    req.session.set("User", null);
+    req.session.set("user", null);
   });
 
   // PreHandler: Attach session messages to locals
@@ -48,14 +62,20 @@ async function sessionPlugin(fastify, config) {
     };
   });
 
-  // Decorate reply.view to clear messages **after** rendering
+  // Decorate reply.view para limpar mensagens após renderizar
   fastify.addHook("onRequest", async (req, reply) => {
     const originalView = reply.view;
     reply.view = function (template, data) {
       const result = originalView.call(this, template, data);
-      req.session.set("messages", []); // Clear messages after rendering
+      req.session.set("messages", []);
       return result;
     };
+  });
+
+  // Fechar conexão Redis no encerramento do Fastify
+  fastify.addHook("onClose", async (instance, done) => {
+    await redisClient.quit();
+    done();
   });
 }
 
