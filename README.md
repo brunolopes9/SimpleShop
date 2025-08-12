@@ -14,18 +14,25 @@ A simple but powerful e-commerce application built with Fastify, MySQL, MongoDB,
 - **Node.js** – Server-side JavaScript runtime
 
 ## 📂 Project Structure
+
 src/
+
 ├── config/ # Environment and connection settings
+
 ├── models/
+
 │ ├── mongoose/ # MongoDB models (e.g., Item)
+
 │ └── sequelize/ # MySQL models (User, Order, OrderItem)
+
 ├── plugins/ # Integrations with databases and Redis
+
 ├── routes/ # Application routes (admin, shop, user, etc.)
+
 └── views/ # EJS templates
 
-markdown
-Copiar
-Editar
+
+
 
 ## ⚙️ Features
 - Product Management (**MongoDB**)
