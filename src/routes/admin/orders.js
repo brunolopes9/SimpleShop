@@ -56,14 +56,15 @@ export default async function (fastify) {
       // TODO: Fetch the order by ID and update its status to "Shipped"
       fastify.log.info(`Attempting to set order ${orderId} as shipped.`);
 
-      const order = null; // Replace with actual database query
-
+      const order = await fastify.models.Order.findByPk(orderId);
       if (!order) {
         request.session.set("messages", [
           { type: "danger", text: `Order with ID ${orderId} not found.` }
         ]);
         return reply.redirect("/admin/orders");
       }
+      order.status = "shipped";
+      await order.save();
 
       // TODO: Update the order status to "Shipped"
       fastify.log.info(`Order ${orderId} marked as shipped.`);
