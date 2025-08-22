@@ -20,12 +20,9 @@ export const config = {
   },
 
   redis: {
-    username: "default",
-    password: process.env.REDIS_PASSWORD,
     socket: {
-      host: process.env.REDIS_HOST,
-      port: 18596,
-      tls: true
+      host: "red-d2k772fdiees73dchkb0",
+      port: 6379
     }
   },
   session: {
