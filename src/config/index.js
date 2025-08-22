@@ -1,4 +1,6 @@
-// config/index.js
+import dotenv from "dotenv";
+dotenv.config();
+
 export const config = {
   server: {
     port: process.env.PORT || 3000
@@ -18,9 +20,7 @@ export const config = {
     }
   },
 
-  redis: {
-    url: process.env.REDIS_URL
-  },
+  redis: { url: process.env.REDIS_URL },
 
   session: {
     // Secret key to encrypt client side sessions.

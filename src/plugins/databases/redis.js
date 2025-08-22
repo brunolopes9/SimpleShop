@@ -5,7 +5,6 @@ async function redisPlugin(fastify, config) {
   let redisStatus = "disconnected";
 
   try {
-    // Conectar usando a URL
     const redis = new Redis(config.url);
 
     redis.on("connect", () => {
@@ -26,7 +25,6 @@ async function redisPlugin(fastify, config) {
 
   fastify.decorate("redisStatus", () => redisStatus);
 
-  // Graceful shutdown
   fastify.addHook("onClose", async (fastifyInstance, done) => {
     redisStatus = "disconnected";
     await fastify.redis.quit();
