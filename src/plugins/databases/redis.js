@@ -1,36 +1,17 @@
-import fp from "fastify-plugin";
 import { createClient } from "redis";
 
-async function redisPlugin(fastify, config) {
-  const client = createClient({
-    url: config.url,
-    socket: {
-      reconnectStrategy: (retries) => {
-        if (retries > 5) return new Error("Unable to reconnect to Redis");
-        return 2000;
-      },
-      connectTimeout: 5000,
-      keepAlive: 10000
-    }
-  });
+const client = createClient({ url: process.env.REDIS_URL });
 
-  client.on("error", (err) => fastify.log.error({ err }, "Redis Client Error"));
+client.on("error", (err) => console.error("Redis Client Error", err));
 
+(async () => {
   try {
     await client.connect();
-    // ⬅️ PING garante que a conexão está funcional antes de registrar
-    await client.ping();
-    fastify.log.info("Connected to Redis");
-  } catch (err) {
-    fastify.log.error({ err }, "Failed to connect to Redis");
-    throw err; // evita timeout no session-plugin
-  }
-
-  fastify.decorate("redis", client);
-
-  fastify.addHook("onClose", async () => {
+    console.log("Connected to Redis");
+    const pong = await client.ping();
+    console.log("PING response:", pong);
     await client.quit();
-  });
-}
-
-export default fp(redisPlugin, { name: "redis-plugin" });
+  } catch (err) {
+    console.error("Failed to connect or ping Redis:", err);
+  }
+})();
