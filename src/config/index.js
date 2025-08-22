@@ -20,7 +20,14 @@ export const config = {
     }
   },
 
-  redis: { url: process.env.REDIS_URL },
+  redis: {
+    username: "default",
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+      host: process.env.REDIS_URL,
+      port: 18596
+    }
+  },
 
   session: {
     // Secret key to encrypt client side sessions.
