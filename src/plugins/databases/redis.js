@@ -5,7 +5,7 @@ async function redisPlugin(fastify, config) {
   const client = createClient({ url: config.url });
 
   client.on("error", (err) => {
-    fastify.log.error("Redis Client Error", err);
+    fastify.log.error({ err }, "Redis Client Error");
   });
 
   await client.connect(); // ⬅️ espera até conectar de verdade
