@@ -6,10 +6,10 @@ export const config = {
   mongodb: {
     uri: process.env.MONGODB_URI,
     options: {
-      serverSelectionTimeoutMS: 3000,
-      socketTimeoutMS: 3000,
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 3000,
+      socketTimeoutMS: 3000
     }
   },
 
@@ -18,9 +18,7 @@ export const config = {
     options: {
       logging: false,
       dialectOptions: {
-        ssl: {
-          rejectUnauthorized: true
-        }
+        ssl: false // SSL desativado
       }
     }
   },
@@ -30,8 +28,7 @@ export const config = {
     password: process.env.REDIS_PASSWORD,
     socket: {
       host: "redis-18596.c8.us-east-1-3.ec2.redns.redis-cloud.com",
-      port: 18596,
-      tls: true
+      port: 18596
     }
   },
 
