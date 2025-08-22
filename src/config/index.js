@@ -1,9 +1,11 @@
+import fs from "fs";
+
 export const config = {
   server: {
     port: process.env.PORT || 3000
   },
   mongodb: {
-    uri: "mongodb://localhost:27017/simpleshop",
+    uri: "mongodb+srv://bruno:1234@cluster0.zg8q01r.mongodb.net/nomeDoBanco?retryWrites=true&w=majority",
     options: {
       serverSelectionTimeoutMS: 3000,
       socketTimeoutMS: 3000
@@ -11,15 +13,25 @@ export const config = {
   },
 
   mysql: {
-    uri: "mysql://root:secret@localhost:3306/simpleshop",
+    uri: "mysql://avnadmin:AVNS_FvH32m4kp5P6PPPWhjy@mysql-2a944e79-bruno-ae2d.f.aivencloud.com:24220/defaultdb?ssl-mode=REQUIRED",
     options: {
-      loggin: false
+      loggin: false,
+      dialectOptions: {
+        ssl: {
+          ca: fs.readFileSync("src/config/ca.pem")
+        }
+      }
     }
   },
 
   redis: {
-    host: "localhost",
-    port: 6379
+    username: "default",
+    password: "HvhJ4A72LqfABcN7yC1duwdl6nDNaIHY",
+    socket: {
+      host: "redis-18596.c8.us-east-1-3.ec2.redns.redis-cloud.com",
+      port: 18596,
+      tls: true
+    }
   },
   session: {
     // Secret key to encrypt client side sessions.
