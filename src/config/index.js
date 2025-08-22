@@ -20,6 +20,10 @@ export const config = {
     }
   },
 
+  redis: {
+    url: process.env.REDIS_URL // deve ser algo como redis://:<password>@<internal-host>:6379
+  },
+
   session: {
     // Secret key to encrypt client side sessions.
     // Created on the terminal with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
