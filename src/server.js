@@ -31,8 +31,8 @@ fastify.register(mongoosePlugin, config.mongodb);
 // Register MySQL/Sequelize plugin
 fastify.register(sequelizePlugin, config.mysql);
 
-fastify.register(redisPlugin, config.redis);
-fastify.register(sessionPlugin, config.session);
+await fastify.register(redisPlugin, config.redis, { timeout: 20000 });
+await fastify.register(sessionPlugin, { ...config.session, timeout: 60000 });
 
 fastify.register(basketPlugin);
 
