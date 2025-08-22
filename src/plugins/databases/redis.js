@@ -5,10 +5,13 @@ async function redisPlugin(fastify, config) {
   const client = createClient({
     url: config.url,
     socket: {
+      // evita reconexões infinitas agressivas
       reconnectStrategy: (retries) => {
         if (retries > 5) return new Error("Unable to reconnect to Redis");
-        return 2000; // tenta reconectar a cada 2s, até 5 vezes
-      }
+        return 2000; // tenta reconectar a cada 2s
+      },
+      connectTimeout: 5000, // timeout de conexão
+      keepAlive: 10000 // mantém o socket vivo
     }
   });
 
@@ -17,11 +20,11 @@ async function redisPlugin(fastify, config) {
   });
 
   try {
-    await client.connect(); // espera conectar
+    await client.connect();
     fastify.log.info("Connected to Redis");
   } catch (err) {
     fastify.log.error({ err }, "Failed to connect to Redis");
-    throw err; // plugin falha, evita timeout infinito no session-plugin
+    throw err; // evita iniciar session-plugin se falhar
   }
 
   fastify.decorate("redis", client);
