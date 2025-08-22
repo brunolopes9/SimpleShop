@@ -1,4 +1,4 @@
-import fs from "fs";
+import { createClient } from "redis";
 
 export const config = {
   server: {
@@ -11,23 +11,28 @@ export const config = {
       socketTimeoutMS: 3000
     }
   },
-
   mysql: {
     uri: process.env.MYSQL_URI,
     options: {
-      loggin: false
+      logging: false
     }
   },
-
   redis: {
-    socket: {
-      host: "red-d2k772fdiees73dchkb0",
-      port: 6379
-    }
+    url: process.env.REDIS_URL
   },
   session: {
-    // Secret key to encrypt client side sessions.
-    // Created on the terminal with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
-    secret: "x3cIkEhWRLRLBD8Zfhd2SUw0UEGieSjOVV2a1a82YEE="
+    secret: "x3cIkEhWRLRLBD8Zfhd2SUw0UEGieSjOVV2a1a82YEE=" // ⚠️ ideal guardar isto também no .env
   }
 };
+
+// Inicializar Redis client
+export async function initRedis() {
+  const client = createClient({ url: config.redis.url });
+
+  client.on("error", (err) => console.error("Redis Client Error", err));
+
+  await client.connect();
+  console.log("✅ Redis connected!");
+
+  return client;
+}
