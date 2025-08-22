@@ -3,11 +3,12 @@ import { createClient } from "redis";
 
 async function redisPlugin(fastify, config) {
   const client = createClient({
-    username: config.username,
-    password: config.password,
+    username: "default",
+    password: process.env.REDIS_PASSWORD,
     socket: {
-      host: config.socket.host,
-      port: config.socket.port
+      host: process.env.REDIS_URL,
+      port: 18596,
+      tls: true
     }
   });
 
