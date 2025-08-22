@@ -2,17 +2,29 @@ import fp from "fastify-plugin";
 import { createClient } from "redis";
 
 async function redisPlugin(fastify, config) {
-  const client = createClient({ url: config.url });
+  // Detecta se precisa de TLS
+  const useTLS = config.url.startsWith("rediss://");
+
+  const client = createClient({
+    url: config.url,
+    socket: useTLS ? { tls: true, rejectUnauthorized: false } : undefined
+  });
 
   client.on("error", (err) => {
     fastify.log.error({ err }, "Redis Client Error");
   });
 
-  await client.connect(); // ⬅️ espera até conectar de verdade
-  fastify.log.info("Connected to Redis");
+  try {
+    await client.connect(); // aguarda conexão
+    fastify.log.info("Connected to Redis");
+  } catch (err) {
+    fastify.log.error({ err }, "Failed to connect to Redis");
+    throw err; // se falhar, não prossegue com sessão
+  }
 
   fastify.decorate("redis", client);
-  fastify.addHook("onClose", async (fastifyInstance) => {
+
+  fastify.addHook("onClose", async () => {
     await client.quit();
   });
 }

@@ -1,4 +1,3 @@
-// Import the Fastify framework
 import Fastify from "fastify";
 import { config } from "./config/index.js";
 
@@ -13,48 +12,37 @@ import sessionPlugin from "./plugins/session.js";
 import formBody from "@fastify/formbody";
 import basketPlugin from "./plugins/basket.js";
 
-// Create a Fastify instance with logging enabled
 const fastify = Fastify({ logger: true, disableRequestLogging: true });
 
-// Register the formbody plugin to handle HTML forms
-fastify.register(formBody);
-
-// Register a plugin for serving static files like stylesheets and images
-fastify.register(staticPlugin);
-
-// Register the defaults plugin
-fastify.register(defaultsPlugin);
-
-// Register MogoDB/Mongoose plugin
-fastify.register(mongoosePlugin, config.mongodb);
-
-// Register MySQL/Sequelize plugin
-fastify.register(sequelizePlugin, config.mysql);
-
-fastify.register(redisPlugin, config.redis);
-fastify.register(sessionPlugin, config.session);
-
-fastify.register(basketPlugin);
-
-// Register the view plugin
-fastify.register(viewPlugin);
-
-// Register the routes plugin
-fastify.register(routesPlugin);
-
-// Start the server
 const start = async () => {
   try {
+    // Plugins independentes
+    await fastify.register(formBody);
+    await fastify.register(staticPlugin);
+    await fastify.register(defaultsPlugin);
+    await fastify.register(mongoosePlugin, config.mongodb);
+    await fastify.register(sequelizePlugin, config.mysql);
+
+    // Redis primeiro, sessão depois
+    await fastify.register(redisPlugin, config.redis);
+    await fastify.register(sessionPlugin, {
+      ...config.session,
+      // opcional: aumenta timeout para garantir que não falhe em slow connections
+      timeout: 60000
+    });
+
+    // Outros plugins
+    await fastify.register(basketPlugin);
+    await fastify.register(viewPlugin);
+    await fastify.register(routesPlugin);
+
     const port = config.server.port;
-    // Start listening on the defined port
-    fastify.listen({ port });
+    await fastify.listen({ port });
     fastify.log.info(`Server running at http://localhost:${port}/`);
   } catch (err) {
-    // Log errors if the server fails to start
     fastify.log.error(err);
-    process.exit(1); // Exit the process with a failure code
+    process.exit(1);
   }
 };
 
-// Call the start function to boot up the server
 start();
