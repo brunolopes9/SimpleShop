@@ -31,10 +31,7 @@ fastify.register(mongoosePlugin, config.mongodb);
 // Register MySQL/Sequelize plugin
 fastify.register(sequelizePlugin, config.mysql);
 
-// Register Redis plugin
 fastify.register(redisPlugin, config.redis);
-
-// Register the session plugin AFTER Redis is available
 fastify.register(sessionPlugin, config.session);
 
 fastify.register(basketPlugin);

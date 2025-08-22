@@ -13,7 +13,7 @@ export const config = {
     }
   },
 
-  mysql: {
+  mysql: {A
     uri: process.env.MYSQL_URI,
     options: {
       logging: false
