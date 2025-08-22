@@ -23,7 +23,10 @@ const start = async () => {
     await fastify.register(mongoosePlugin, config.mongodb);
     await fastify.register(sequelizePlugin, config.mysql);
 
-    await fastify.register(redisPlugin, config.redis);
+    await fastify.register(redisPlugin, config.redis, {
+      timeout: 20000 // 20 segundos
+    });
+
     await fastify.register(sessionPlugin, {
       ...config.session,
       timeout: 60000
