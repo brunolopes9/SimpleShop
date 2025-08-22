@@ -23,11 +23,9 @@ const start = async () => {
     await fastify.register(mongoosePlugin, config.mongodb);
     await fastify.register(sequelizePlugin, config.mysql);
 
-    // Redis primeiro, sessão depois
     await fastify.register(redisPlugin, config.redis);
     await fastify.register(sessionPlugin, {
       ...config.session,
-      // opcional: aumenta timeout para garantir que não falhe em slow connections
       timeout: 60000
     });
 

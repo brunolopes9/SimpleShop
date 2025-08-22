@@ -2,12 +2,14 @@ import fp from "fastify-plugin";
 import { createClient } from "redis";
 
 async function redisPlugin(fastify, config) {
-  // Detecta se precisa de TLS
-  const useTLS = config.url.startsWith("rediss://");
-
   const client = createClient({
     url: config.url,
-    socket: useTLS ? { tls: true, rejectUnauthorized: false } : undefined
+    socket: {
+      reconnectStrategy: (retries) => {
+        if (retries > 5) return new Error("Unable to reconnect to Redis");
+        return 2000; // tenta reconectar a cada 2s, até 5 vezes
+      }
+    }
   });
 
   client.on("error", (err) => {
@@ -15,11 +17,11 @@ async function redisPlugin(fastify, config) {
   });
 
   try {
-    await client.connect(); // aguarda conexão
+    await client.connect(); // espera conectar
     fastify.log.info("Connected to Redis");
   } catch (err) {
     fastify.log.error({ err }, "Failed to connect to Redis");
-    throw err; // se falhar, não prossegue com sessão
+    throw err; // plugin falha, evita timeout infinito no session-plugin
   }
 
   fastify.decorate("redis", client);
