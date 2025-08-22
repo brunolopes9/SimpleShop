@@ -1,16 +1,14 @@
 import fp from "fastify-plugin";
 import { createClient } from "redis";
 
+const client = createClient({ url: process.env.REDIS_URL });
+await client.connect();
+await client.set("key", "node redis");
+const value = await client.get("key");
+console.log(value);
+
 async function redisPlugin(fastify, config) {
-  const client = createClient({
-    username: "default",
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-      host: process.env.REDIS_URL,
-      port: 18596,
-      tls: true
-    }
-  });
+  const client = createClient({ url: process.env.REDIS_URL });
 
   client.on("error", (err) => fastify.log.error("Redis Client Error:", err));
 

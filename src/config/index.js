@@ -20,15 +20,6 @@ export const config = {
     }
   },
 
-  redis: {
-    username: "default",
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-      host: process.env.REDIS_URL,
-      port: 18596
-    }
-  },
-
   session: {
     // Secret key to encrypt client side sessions.
     // Created on the terminal with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
